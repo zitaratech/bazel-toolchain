@@ -185,7 +185,6 @@ def cc_toolchain_config(
                 "-Wl,--hash-style=gnu",
                 "-Wl,-z,relro,-z,now",
             ])
-    print(target_os + ": " + str(use_lld))
 
     # Flags related to C++ standard.
     # The linker has no way of knowing if there are C++ objects; so we
