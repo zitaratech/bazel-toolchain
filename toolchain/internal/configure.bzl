@@ -250,6 +250,7 @@ def _cc_toolchains_str(
 
     cc_toolchains_str = ""
     toolchain_names = []
+    print(_supported_targets)
     for (target_os, target_arch) in _supported_targets:
         suffix = "{}-{}".format(target_arch, target_os)
         cc_toolchain_str = _cc_toolchain_str(
@@ -267,6 +268,7 @@ def _cc_toolchains_str(
 
     sep = ",\n" + " " * 8  # 2 tabs with tabstop=4.
     toolchain_labels_str = sep.join(["\"{}\"".format(d) for d in toolchain_names])
+    print(toolchain_labels_str)
     return cc_toolchains_str, toolchain_labels_str
 
 # Gets a value from the dict for the target pair, falling back to an empty
@@ -298,7 +300,7 @@ def _cc_toolchain_str(
         sysroot_label_str = ""
 
     if not sysroot_path:
-        if host_os == target_os and host_arch == target_arch:
+        if host_os == target_os and host_os == "darwin":
             # For darwin -> darwin, we can use the macOS SDK path.
             sysroot_path = toolchain_info.default_sysroot_path
         else:

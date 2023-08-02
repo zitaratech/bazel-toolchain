@@ -13,7 +13,7 @@
 # limitations under the License.
 
 load(
-    "@bazel_tools//tools/cpp:unix_cc_toolchain_config.bzl",
+    ":unix_cc_toolchain_config.bzl",
     unix_cc_toolchain_config = "cc_toolchain_config",
 )
 load(
@@ -96,6 +96,15 @@ def cc_toolchain_config(
             "clang",
             "glibc_unknown",
         ),
+        "windows-x86_64": (
+            "clang-x86_64-windows",
+            "x86_64-unknown-windows-msvc",
+            "x86_64",
+            "msvc",
+            "clang",
+            "clang",
+            "msvc",
+        ),
     }[target_os_arch_key]
 
     # Unfiltered compiler flags; these are placed at the end of the command
@@ -141,7 +150,7 @@ def cc_toolchain_config(
 
     link_flags = [
         "--target=" + target_system_name,
-        "-lm",
+        #"-lm",
         "-no-canonical-prefixes",
     ]
 
@@ -150,7 +159,7 @@ def cc_toolchain_config(
     link_libs = []
 
     # Linker flags:
-    if host_os == "darwin" and not is_xcompile:
+    if host_os == "darwin" and target_os == "darwin":
         # lld is experimental for Mach-O, so we use the native ld64 linker.
         # TODO: How do we cross-compile from Linux to Darwin?
         use_lld = False
@@ -168,11 +177,13 @@ def cc_toolchain_config(
         # only option.
         use_lld = True
         link_flags.extend([
+            "-B" + toolchain_path_prefix + "/" + tools_path_prefix,
             "-fuse-ld=lld",
-            "-Wl,--build-id=md5",
-            "-Wl,--hash-style=gnu",
-            "-Wl,-z,relro,-z,now",
+            #"-Wl,--build-id=md5",
+            #"-Wl,--hash-style=gnu",
+            #"-Wl,-z,relro,-z,now",
         ])
+    print(target_os + ": " + str(use_lld))
 
     # Flags related to C++ standard.
     # The linker has no way of knowing if there are C++ objects; so we
@@ -253,6 +264,11 @@ def cc_toolchain_config(
         link_flags.extend([
             "-nostdlib",
         ])
+    elif stdlib == "please":
+        cxx_flags = [
+        ]
+        link_flags.extend([
+        ])
     else:
         fail("Unknown value passed for stdlib: {stdlib}".format(stdlib = stdlib))
 
@@ -291,6 +307,8 @@ def cc_toolchain_config(
             sysroot_prefix + "/usr/include",
             sysroot_prefix + "/System/Library/Frameworks",
         ])
+    elif target_os == "windows":
+        pass
     else:
         fail("Unreachable")
 
@@ -326,7 +344,7 @@ def cc_toolchain_config(
         "dwp": tools_path_prefix + "llvm-dwp",
         "gcc": wrapper_bin_prefix + "cc_wrapper.sh",
         "gcov": tools_path_prefix + "llvm-profdata",
-        "ld": tools_path_prefix + "ld.lld" if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
+        "ld": toolchain_path_prefix + "/" + tools_path_prefix + "lld-link" if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
         "llvm-cov": tools_path_prefix + "llvm-cov",
         "llvm-profdata": tools_path_prefix + "llvm-profdata",
         "nm": tools_path_prefix + "llvm-nm",
