@@ -266,11 +266,6 @@ def cc_toolchain_config(
         link_flags.extend([
             "-nostdlib",
         ])
-    elif stdlib == "please":
-        cxx_flags = [
-        ]
-        link_flags.extend([
-        ])
     else:
         fail("Unknown value passed for stdlib: {stdlib}".format(stdlib = stdlib))
 
