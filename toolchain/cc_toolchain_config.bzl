@@ -150,7 +150,6 @@ def cc_toolchain_config(
 
     link_flags = [
         "--target=" + target_system_name,
-        #"-lm",
         "-no-canonical-prefixes",
     ]
 
@@ -179,10 +178,13 @@ def cc_toolchain_config(
         link_flags.extend([
             "-B" + toolchain_path_prefix + "/" + tools_path_prefix,
             "-fuse-ld=lld",
-            #"-Wl,--build-id=md5",
-            #"-Wl,--hash-style=gnu",
-            #"-Wl,-z,relro,-z,now",
         ])
+        if target_os == "linux":
+            link_flags.extend([
+                "-Wl,--build-id=md5",
+                "-Wl,--hash-style=gnu",
+                "-Wl,-z,relro,-z,now",
+            ])
     print(target_os + ": " + str(use_lld))
 
     # Flags related to C++ standard.
@@ -338,13 +340,14 @@ def cc_toolchain_config(
 
     # The tool names come from [here](https://github.com/bazelbuild/bazel/blob/c7e58e6ce0a78fdaff2d716b4864a5ace8917626/src/main/java/com/google/devtools/build/lib/rules/cpp/CppConfiguration.java#L76-L90):
     # NOTE: Ensure these are listed in toolchain_tools in toolchain/internal/common.bzl.
+    lld_name = "lld-link" if target_os == "windows" else "ld.lld"
     tool_paths = {
         "ar": ar_binary,
         "cpp": tools_path_prefix + "clang-cpp",
         "dwp": tools_path_prefix + "llvm-dwp",
         "gcc": wrapper_bin_prefix + "cc_wrapper.sh",
         "gcov": tools_path_prefix + "llvm-profdata",
-        "ld": toolchain_path_prefix + "/" + tools_path_prefix + "lld-link" if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
+        "ld": tools_path_prefix + lld_name if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
         "llvm-cov": tools_path_prefix + "llvm-cov",
         "llvm-profdata": tools_path_prefix + "llvm-profdata",
         "nm": tools_path_prefix + "llvm-nm",
