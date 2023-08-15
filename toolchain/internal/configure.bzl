@@ -298,7 +298,7 @@ def _cc_toolchain_str(
         sysroot_label_str = ""
 
     if not sysroot_path:
-        if host_os == target_os and host_arch == target_arch:
+        if host_os == target_os and host_os == "darwin":
             # For darwin -> darwin, we can use the macOS SDK path.
             sysroot_path = toolchain_info.default_sysroot_path
         else:

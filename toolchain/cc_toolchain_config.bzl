@@ -96,6 +96,15 @@ def cc_toolchain_config(
             "clang",
             "glibc_unknown",
         ),
+        "windows-x86_64": (
+            "clang-x86_64-windows",
+            "x86_64-unknown-windows-msvc",
+            "x86_64",
+            "msvc",
+            "clang",
+            "clang",
+            "msvc",
+        ),
     }[target_os_arch_key]
 
     # Unfiltered compiler flags; these are placed at the end of the command
@@ -141,7 +150,6 @@ def cc_toolchain_config(
 
     link_flags = [
         "--target=" + target_system_name,
-        "-lm",
         "-no-canonical-prefixes",
     ]
 
@@ -150,7 +158,7 @@ def cc_toolchain_config(
     link_libs = []
 
     # Linker flags:
-    if host_os == "darwin" and not is_xcompile:
+    if host_os == "darwin" and target_os == "darwin":
         # lld is experimental for Mach-O, so we use the native ld64 linker.
         # TODO: How do we cross-compile from Linux to Darwin?
         use_lld = False
@@ -164,11 +172,15 @@ def cc_toolchain_config(
         # only option.
         use_lld = True
         link_flags.extend([
+            "-B" + toolchain_path_prefix + "/" + tools_path_prefix,
             "-fuse-ld=lld",
-            "-Wl,--build-id=md5",
-            "-Wl,--hash-style=gnu",
-            "-Wl,-z,relro,-z,now",
         ])
+        if target_os == "linux":
+            link_flags.extend([
+                "-Wl,--build-id=md5",
+                "-Wl,--hash-style=gnu",
+                "-Wl,-z,relro,-z,now",
+            ])
 
     # Flags related to C++ standard.
     # The linker has no way of knowing if there are C++ objects; so we
@@ -287,6 +299,8 @@ def cc_toolchain_config(
             sysroot_prefix + "/usr/include",
             sysroot_prefix + "/System/Library/Frameworks",
         ])
+    elif target_os == "windows":
+        pass
     else:
         fail("Unreachable")
 
@@ -316,13 +330,14 @@ def cc_toolchain_config(
 
     # The tool names come from [here](https://github.com/bazelbuild/bazel/blob/c7e58e6ce0a78fdaff2d716b4864a5ace8917626/src/main/java/com/google/devtools/build/lib/rules/cpp/CppConfiguration.java#L76-L90):
     # NOTE: Ensure these are listed in toolchain_tools in toolchain/internal/common.bzl.
+    lld_name = "lld-link" if target_os == "windows" else "ld.lld"
     tool_paths = {
         "ar": ar_binary,
         "cpp": tools_path_prefix + "clang-cpp",
         "dwp": tools_path_prefix + "llvm-dwp",
         "gcc": wrapper_bin_prefix + "cc_wrapper.sh",
         "gcov": tools_path_prefix + "llvm-profdata",
-        "ld": tools_path_prefix + "ld.lld" if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
+        "ld": tools_path_prefix + lld_name if use_lld else _host_tools.get_and_assert(host_tools_info, "ld"),
         "llvm-cov": tools_path_prefix + "llvm-cov",
         "llvm-profdata": tools_path_prefix + "llvm-profdata",
         "nm": tools_path_prefix + "llvm-nm",
