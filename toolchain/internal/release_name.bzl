@@ -16,7 +16,7 @@ def _darwin_apple_suffix(llvm_version, arch):
     major_llvm_version = _major_llvm_version(llvm_version)
     patch_llvm_version = _patch_llvm_version(llvm_version)
     if major_llvm_version == 9:
-        "darwin-apple"
+        return "darwin-apple"
     elif major_llvm_version >= 15:
         if arch == "arm64":
             if major_llvm_version == 15 and patch_llvm_version <= 6:
@@ -79,6 +79,8 @@ def _ubuntu_osname(arch, version, major_llvm_version, llvm_version):
             os_name = "linux-gnu-ubuntu-20.04"
         elif llvm_version in ["15.0.6", "13.0.1"]:
             os_name = "linux-gnu-ubuntu-18.04"
+        elif llvm_version in ["15.0.2"]:
+            os_name = "unknown-linux-gnu-rhel86"
         elif llvm_version in ["12.0.1", "11.1.0", "11.0.1", "10.0.1", "9.0.1", "8.0.1"]:
             os_name = "linux-gnu-ubuntu-16.04"
         elif llvm_version in ["7.1.0"]:
@@ -93,6 +95,7 @@ def _linux(llvm_version, distname, version, arch):
 
     # NOTE: Many of these systems are untested because I do not have access to them.
     # If you find this mapping wrong, please send a Pull Request on Github.
+    os_name = None
     if arch in ["aarch64", "armv7a", "mips", "mipsel"]:
         os_name = "linux-gnu"
     elif distname == "freebsd":
@@ -134,7 +137,8 @@ def _linux(llvm_version, distname, version, arch):
             os_name = _ubuntu_osname(arch, "18.04", major_llvm_version, llvm_version)
         elif float(version) >= 9:
             os_name = _ubuntu_osname(arch, "20.04", major_llvm_version, llvm_version)
-    else:
+
+    if not os_name:
         fail("Unsupported linux distribution and version: %s, %s" % (distname, version))
 
     return "clang+llvm-{llvm_version}-{arch}-{os_name}.tar.xz".format(

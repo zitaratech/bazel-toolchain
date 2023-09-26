@@ -13,13 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Disable the unreachable code warning because the test is disabled.
+# shellcheck disable=SC2317
+
 echo "This test is disabled because our supported versions of LLVM do not work with CentOS."
 exit 1
 
 set -euo pipefail
 
 images=(
-"centos:7"
+  "centos:7"
 )
 
 git_root=$(git rev-parse --show-toplevel)

@@ -225,6 +225,12 @@ _llvm_distributions = {
     "clang+llvm-15.0.0-sparcv9-sun-solaris2.11.tar.xz": "4354854976355ca6f4ac90231a97121844c4fc9f998c9850527390120c62f01f",
     "clang+llvm-15.0.0-x86_64-apple-darwin.tar.xz": "8fb11e6ada98b901398b2e7b0378a3a59e88c88c754e95d8f6b54613254d7d65",
 
+    # 15.0.2
+    "clang+llvm-15.0.2-aarch64-linux-gnu.tar.xz": "3d0c2b28b0c06ebb9e0ce75e337680403771b28a4b8f065ce608cf2386f97a73",
+    "clang+llvm-15.0.2-arm64-apple-darwin21.0.tar.xz": "8c33f807bca56568b7060d0474daf63c8c10ec521d8188ac76362354d313ec58",
+    "clang+llvm-15.0.2-x86_64-apple-darwin.tar.xz": "a37ec6204f555605fa11e9c0e139a251402590ead6e227fc72da193e03883882",
+    "clang+llvm-15.0.2-x86_64-unknown-linux-gnu-rhel86.tar.xz": "f48f479e91ee7297ed8306c9d4495015691237cd91cc5330d3e1ee057b0548bd",
+
     # 15.0.6
     "clang+llvm-15.0.6-aarch64-linux-gnu.tar.xz": "8ca4d68cf103da8331ca3f35fe23d940c1b78fb7f0d4763c1c059e352f5d1bec",
     "clang+llvm-15.0.6-arm64-apple-darwin21.0.tar.xz": "32bc7b8eee3d98f72dd4e5651e6da990274ee2d28c5c19a7d8237eb817ce8d91",
@@ -277,9 +283,24 @@ _llvm_distributions = {
     "clang+llvm-16.0.3-x86_64-linux-gnu-ubuntu-22.04.tar.xz": "638d32fd0032f99bafaab3bae63a406adb771825a02b6b7da119ee7e71af26c6",
 
     # 16.0.4
+    "clang+llvm-16.0.4-aarch64-linux-gnu.tar.xz": "2e0b5b20d21ff80dea9f31d3f7636e458028ad0d5ee0bda42608fa8744ea3a12",
     "clang+llvm-16.0.4-amd64-unknown-freebsd13.tar.xz": "cf9d73bcf05b8749c7f3efbe86654b8fe0209f28993eafe26c27eb85885593f7",
     "clang+llvm-16.0.4-arm64-apple-darwin22.0.tar.xz": "429b8061d620108fee636313df55a0602ea0d14458c6d3873989e6b130a074bd",
+    "clang+llvm-16.0.4-armv7a-linux-gnueabihf.tar.xz": "e3fafbb5813650cdbfb191005fa8a7b1f036fbadff171e05b32d06015e1feb46",
+    "clang+llvm-16.0.4-powerpc64-ibm-aix-7.2.tar.xz": "af8691731ddd4142c53d9aeb2ad2c4281f4ca9819c5630e7ccade40f39dc4ee5",
+    "clang+llvm-16.0.4-powerpc64le-linux-rhel-8.4.tar.xz": "fe99951300ae7f1877f00531dc5a2f5f00572fa236be6d1323902ea6aeb0a496",
     "clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04.tar.xz": "fd464333bd55b482eb7385f2f4e18248eb43129a3cda4c0920ad9ac3c12bdacf",
+
+    # 16.0.5
+    "clang+llvm-16.0.5-aarch64-linux-gnu.tar.xz": "c427d4fa5cd21a11d9fea55ae60ad2e7230ad8411f7a0dea867273f2a1b74891",
+    "clang+llvm-16.0.5-amd64-unknown-freebsd13.tar.xz": "c52d693584d4f86d972acb52be5d14d13ccd815c68ca22114e46829219da3734",
+    "clang+llvm-16.0.5-arm64-apple-darwin22.0.tar.xz": "1aed0787417dd915f0101503ce1d2719c8820a2c92d4a517bfc4044f72035bcc",
+    "clang+llvm-16.0.5-powerpc64-ibm-aix-7.2.tar.xz": "5649575b499deff1470dd1f3baacbee445bf2789de266135d81024572efc54f0",
+    "clang+llvm-16.0.5-powerpc64le-linux-rhel-8.7.tar.xz": "8f2588dabcc2515e860733c2001fb81774aa2d2bccad153f064cfb886df2d065",
+
+    # 16.0.6
+    "clang+llvm-16.0.6-aarch64-linux-gnu.tar.xz": "283e904048425f05798a98f1b288ae0d28ce75eb1049e0837f959e911369945b",
+    "clang+llvm-16.0.6-powerpc64le-linux-rhel-8.7.tar.xz": "1f8d73c342efc82618bd8d58fa8855bc7e70bd2a6ed9646065aabfa4b468e82d",
 }
 
 # Note: Unlike the user-specified llvm_mirror attribute, the URL prefixes in
@@ -303,6 +324,7 @@ _llvm_distributions_base_url = {
     "13.0.1": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "14.0.0": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "15.0.0": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
+    "15.0.2": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "15.0.6": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "15.0.7": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "16.0.0": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
@@ -310,6 +332,8 @@ _llvm_distributions_base_url = {
     "16.0.2": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "16.0.3": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
     "16.0.4": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
+    "16.0.5": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
+    "16.0.6": "https://github.com/llvm/llvm-project/releases/download/llvmorg-",
 }
 
 def _get_auth(ctx, urls):
@@ -336,6 +360,9 @@ def _get_auth(ctx, urls):
 
 def download_llvm(rctx):
     urls = []
+    sha256 = None
+    strip_prefix = None
+    key = None
     update_sha256 = False
     if rctx.attr.urls:
         urls, sha256, strip_prefix, key = _urls(rctx)
@@ -357,9 +384,9 @@ def download_llvm(rctx):
     return updated_attrs
 
 def _urls(rctx):
-    (key, urls) = _host_os_arch_dict_value(rctx, "urls", debug = True)
+    (key, urls) = _host_os_arch_dict_value(rctx, "urls", debug = False)
     if not urls:
-        print("LLVM archive URLs missing and no default fallback provided; will try 'distribution' attribute")
+        print("LLVM archive URLs missing and no default fallback provided; will try 'distribution' attribute")  # buildifier: disable=print
 
     sha256 = rctx.attr.sha256.get(key, default = "")
     strip_prefix = rctx.attr.strip_prefix.get(key, default = "")
@@ -371,9 +398,9 @@ def _get_llvm_version(rctx):
         return rctx.attr.llvm_version
     if not rctx.attr.llvm_versions:
         fail("Neither 'llvm_version' nor 'llvm_versions' given.")
-    (key, llvm_version) = _host_os_arch_dict_value(rctx, "llvm_versions")
+    (_, llvm_version) = _host_os_arch_dict_value(rctx, "llvm_versions")
     if not llvm_version:
-        fail("LLVM version string missing for ({os}, {arch})", os=_os(rctx), arch=_arch(rctx))
+        fail("LLVM version string missing for ({os}, {arch})", os = _os(rctx), arch = _arch(rctx))
     return llvm_version
 
 def _distribution_urls(rctx):
@@ -399,5 +426,7 @@ def _distribution_urls(rctx):
     sha256 = _llvm_distributions[basename]
 
     strip_prefix = basename[:(len(basename) - len(".tar.xz"))]
+
+    strip_prefix = strip_prefix.rstrip("-rhel86")
 
     return urls, sha256, strip_prefix

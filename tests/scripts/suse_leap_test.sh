@@ -16,7 +16,7 @@
 set -euox pipefail
 
 images=(
-"opensuse/leap:latest"
+  "opensuse/leap:latest"
 )
 
 # See note next to the definition of this toolchain in the WORKSPACE file.
@@ -25,7 +25,7 @@ toolchain="@llvm_toolchain_13_0_0//:cc-toolchain-x86_64-linux"
 git_root=$(git rev-parse --show-toplevel)
 readonly git_root
 
-echo "git root: $git_root"
+echo "git root: ${git_root}"
 
 for image in "${images[@]}"; do
   docker pull "${image}"

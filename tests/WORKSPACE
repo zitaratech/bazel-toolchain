@@ -12,43 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "com_grail_bazel_toolchain_tests")
+workspace(name = "toolchains_llvm_tests")
 
 local_repository(
-    name = "com_grail_bazel_toolchain",
+    name = "toolchains_llvm",
     path = "..",
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
+load("@toolchains_llvm//toolchain:deps.bzl", "bazel_toolchain_dependencies")
 
 bazel_toolchain_dependencies()
 
-load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
+load("@toolchains_llvm//toolchain:rules.bzl", "llvm_toolchain")
 
 # When updating this version, also update the versions associated with
 # llvm_toolchain below, sys_paths_test in the workflows file, and xcompile_test
 # through the `llvm_toolchain_with_sysroot` toolchain.
-LLVM_VERSION = "15.0.6"
+LLVM_VERSION = "16.0.0"
+
+LLVM_VERSIONS = {
+    "": "16.0.0",
+    "darwin-aarch64": "16.0.5",
+    "darwin-x86_64": "15.0.7",
+}
 
 llvm_toolchain(
     name = "llvm_toolchain",
-    llvm_versions = {
-        "": "15.0.6",
-        "darwin-aarch64": "15.0.7",
-        "darwin-x86_64": "15.0.7",
-    },
+    llvm_versions = LLVM_VERSIONS,
 )
 
 # Example toolchain with user provided URLs.
 # TODO(siddharthab): Add test.
 llvm_toolchain(
     name = "llvm_toolchain_with_urls",
-    llvm_versions = {
-        "": "15.0.6",
-        "darwin-aarch64": "15.0.7",
-        "darwin-x86_64": "15.0.7",
-    },
+    llvm_versions = LLVM_VERSIONS,
     sha256 = {
         "": "38bc7f5563642e73e69ac5626724e206d6d539fbef653541b34cae0ba9c3f036",
         "darwin-aarch64": "867c6afd41158c132ef05a8f1ddaecf476a26b91c85def8e124414f9a9ba188d",
@@ -64,13 +62,6 @@ llvm_toolchain(
         "darwin-aarch64": ["https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/clang+llvm-15.0.7-arm64-apple-darwin22.0.tar.xz"],
         "darwin-x86_64": ["https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/clang+llvm-15.0.7-x86_64-apple-darwin21.0.tar.xz"],
     },
-)
-
-# This is the latest version of LLVM that seems to work with rules_go; later
-# versions cause the tests to crash.
-llvm_toolchain(
-    name = "llvm_toolchain_14_0_0",
-    llvm_version = "14.0.0",
 )
 
 # This is the last known LLVM version with zlib support in ld.lld. Without zlib
@@ -103,7 +94,7 @@ llvm_toolchain(
     llvm_version = LLVM_VERSION,
     # For this toolchain to work, the LLVM distribution archive would need to be unpacked here.
     # A path in /tmp to be part of system tmp cleanup schedule.
-    toolchain_roots = {"": "/tmp/llvm-15"},
+    toolchain_roots = {"": "/tmp/llvm-16"},
 )
 
 ## Toolchain example with a sysroot.
@@ -124,11 +115,7 @@ filegroup(
 
 llvm_toolchain(
     name = "llvm_toolchain_with_sysroot",
-    llvm_versions = {
-        "": "15.0.6",
-        "darwin-x86_64": "15.0.7",
-        "darwin-aarch64": "15.0.7",
-    },
+    llvm_versions = LLVM_VERSIONS,
     sysroot = {
         "linux-x86_64": "@org_chromium_sysroot_linux_x64//:sysroot",
     },
@@ -186,18 +173,21 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "56d8c5a5c91e1af73eca71a6fab2ced959b67c86d12ba37feedb0a2dfea441a6",
+    sha256 = "278b7ff5a826f3dc10f04feaf0b70d48b68748ccd512d7f98bf442077f043fe3",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.37.0/rules_go-v0.37.0.zip",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.37.0/rules_go-v0.37.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.41.0/rules_go-v0.41.0.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.41.0/rules_go-v0.41.0.zip",
     ],
 )
 
-load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+load("@io_bazel_rules_go//go:deps.bzl", "go_download_sdk", "go_rules_dependencies")
 
 go_rules_dependencies()
 
-go_register_toolchains(version = "1.19.3")
+go_download_sdk(
+    name = "go_sdk",
+    version = "1.21.0",
+)
 
 # For testing rules_rust.
 

@@ -19,12 +19,11 @@ load(
 load(
     "//toolchain/internal:common.bzl",
     _check_os_arch_keys = "check_os_arch_keys",
-    _host_tool_features = "host_tool_features",
     _host_tools = "host_tools",
     _os_arch_pair = "os_arch_pair",
 )
 
-# Bazel 4.* doesn't support nested skylark functions, so we cannot simplify
+# Bazel 4.* doesn't support nested starlark functions, so we cannot simplify
 # _fmt_flags() by defining it as a nested function.
 def _fmt_flags(flags, toolchain_path_prefix):
     return [f.format(toolchain_path_prefix = toolchain_path_prefix) for f in flags]
@@ -46,6 +45,7 @@ def cc_toolchain_config(
     host_os_arch_key = _os_arch_pair(host_os, host_arch)
     target_os_arch_key = _os_arch_pair(target_os, target_arch)
     _check_os_arch_keys([host_os_arch_key, target_os_arch_key])
+    major_llvm_version = int(llvm_version.split(".")[0])
 
     # A bunch of variables that get passed straight through to
     # `create_cc_toolchain_config_info`.
@@ -282,6 +282,9 @@ def cc_toolchain_config(
             toolchain_path_prefix + "lib/clang/{}/include".format(llvm_version),
             toolchain_path_prefix + "lib/clang/{}/share".format(llvm_version),
             toolchain_path_prefix + "lib64/clang/{}/include".format(llvm_version),
+            toolchain_path_prefix + "lib/clang/{}/include".format(major_llvm_version),
+            toolchain_path_prefix + "lib/clang/{}/share".format(major_llvm_version),
+            toolchain_path_prefix + "lib64/clang/{}/include".format(major_llvm_version),
         ])
 
     sysroot_path = compiler_configuration["sysroot_path"]
@@ -309,30 +312,11 @@ def cc_toolchain_config(
     ## NOTE: make variables are missing here; unix_cc_toolchain_config doesn't
     ## pass these to `create_cc_toolchain_config_info`.
 
-    # Tool paths:
-    # `llvm-strip` was introduced in V7 (https://reviews.llvm.org/D46407):
-    llvm_version = llvm_version.split(".")
-    llvm_major_ver = int(llvm_version[0]) if len(llvm_version) else 0
-    strip_binary = (tools_path_prefix + "llvm-strip") if llvm_major_ver >= 7 else _host_tools.get_and_assert(host_tools_info, "strip")
-
-    # TODO: The command line formed on darwin does not work with llvm-ar.
-    ar_binary = tools_path_prefix + "llvm-ar"
-    if host_os == "darwin":
-        # Bazel uses arg files for longer commands; some old macOS `libtool`
-        # versions do not support this.
-        #
-        # In these cases we want to use `libtool_wrapper.sh` which translates
-        # the arg file back into command line arguments.
-        if not _host_tools.tool_supports(host_tools_info, "libtool", features = [_host_tool_features.SUPPORTS_ARG_FILE]):
-            ar_binary = wrapper_bin_prefix + "host_libtool_wrapper.sh"
-        else:
-            ar_binary = host_tools_info["libtool"]["path"]
-
     # The tool names come from [here](https://github.com/bazelbuild/bazel/blob/c7e58e6ce0a78fdaff2d716b4864a5ace8917626/src/main/java/com/google/devtools/build/lib/rules/cpp/CppConfiguration.java#L76-L90):
     # NOTE: Ensure these are listed in toolchain_tools in toolchain/internal/common.bzl.
     lld_name = "lld-link" if target_os == "windows" else "ld.lld"
     tool_paths = {
-        "ar": ar_binary,
+        "ar": tools_path_prefix + "llvm-ar",
         "cpp": tools_path_prefix + "clang-cpp",
         "dwp": tools_path_prefix + "llvm-dwp",
         "gcc": wrapper_bin_prefix + "cc_wrapper.sh",
@@ -343,7 +327,7 @@ def cc_toolchain_config(
         "nm": tools_path_prefix + "llvm-nm",
         "objcopy": tools_path_prefix + "llvm-objcopy",
         "objdump": tools_path_prefix + "llvm-objdump",
-        "strip": strip_binary,
+        "strip": tools_path_prefix + "llvm-strip",
     }
 
     # Start-end group linker support:
