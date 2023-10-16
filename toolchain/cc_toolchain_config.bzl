@@ -157,30 +157,17 @@ def cc_toolchain_config(
     # unused symbols are not stripped.
     link_libs = []
 
-    # Linker flags:
-    if host_os == "darwin" and target_os == "darwin":
-        # lld is experimental for Mach-O, so we use the native ld64 linker.
-        # TODO: How do we cross-compile from Linux to Darwin?
-        use_lld = False
+    use_lld = True
+    link_flags.extend([
+        "-B" + toolchain_path_prefix + "/" + tools_path_prefix,
+        "-fuse-ld=lld",
+    ])
+    if target_os == "linux":
         link_flags.extend([
-            "-headerpad_max_install_names",
-            "-fobjc-link-runtime",
+            "-Wl,--build-id=md5",
+            "-Wl,--hash-style=gnu",
+            "-Wl,-z,relro,-z,now",
         ])
-    else:
-        # Note that for xcompiling from darwin to linux, the native ld64 is
-        # not an option because it is not a cross-linker, so lld is the
-        # only option.
-        use_lld = True
-        link_flags.extend([
-            "-B" + toolchain_path_prefix + "/" + tools_path_prefix,
-            "-fuse-ld=lld",
-        ])
-        if target_os == "linux":
-            link_flags.extend([
-                "-Wl,--build-id=md5",
-                "-Wl,--hash-style=gnu",
-                "-Wl,-z,relro,-z,now",
-            ])
 
     # Flags related to C++ standard.
     # The linker has no way of knowing if there are C++ objects; so we
@@ -336,7 +323,7 @@ def cc_toolchain_config(
     # The oldest version of LLVM that we support is 6.0.0 which was released
     # after the above patch was merged, so we just set this to `True` when
     # `lld` is being used as the linker.
-    supports_start_end_lib = use_lld
+    supports_start_end_lib = use_lld and target_os == "linux"
 
     # Replace flags with any user-provided overrides.
     if compiler_configuration["compile_flags"] != None:
