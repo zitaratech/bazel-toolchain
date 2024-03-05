@@ -34,10 +34,9 @@ filegroup(
 
 filegroup(
     name = "ld",
-    srcs = [
-        "bin/ld.lld",
-        "bin/lld-link",
-    ],
+    srcs = glob([
+        "bin/*lld*",
+    ]),
 )
 
 filegroup(
